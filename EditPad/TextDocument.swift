@@ -2,11 +2,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 import EditPadKit
 
-extension UTType {
-    /// Markdown, declared as an imported type in Info.plist.
-    static let markdown = UTType(importedAs: "net.daringfireball.markdown", conformingTo: .plainText)
-}
-
 /// A plain-text file. Text is kept `\n`-normalized while editing; the file's
 /// original encoding, BOM and line endings are restored on save.
 struct TextDocument: FileDocument {
@@ -18,11 +13,10 @@ struct TextDocument: FileDocument {
         self.format = format
     }
 
-    /// New documents are created as `.txt`; anything plain-text can be opened.
-    static var readableContentTypes: [UTType] {
-        [.plainText, .utf8PlainText, .utf16PlainText, .markdown, .sourceCode, .json, .xml, .yaml,
-         .commaSeparatedText, .tabSeparatedText, .log, .propertyList]
-    }
+    /// New documents are created as `.txt` (the first type). Text, source code,
+    /// config files and files with unknown extensions can all be opened; see
+    /// `scripts/generate-file-types.py`.
+    static var readableContentTypes: [UTType] { SupportedFileTypes.readable }
 
     init(configuration: ReadConfiguration) throws {
         guard let data = configuration.file.regularFileContents else {
@@ -32,7 +26,10 @@ struct TextDocument: FileDocument {
             let decoded = try TextCodec.decode(data)
             self.init(text: decoded.text, format: decoded.format)
         } catch {
-            throw CocoaError(.fileReadUnknownStringEncoding)
+            // Binary files (images, archives) reach here via the `.data` catch-all.
+            throw CocoaError(.fileReadUnknownStringEncoding, userInfo: [
+                NSLocalizedDescriptionKey: "This file isn't text, so EditPad can't open it.",
+            ])
         }
     }
 

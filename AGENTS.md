@@ -17,13 +17,13 @@ them root-first, so a deeper file overrides a shallower one. The combined size i
 
 ## Repo
 
-EditPad is a lightweight plain-text editor for iPhone and iPad that opens any text file from the Files app and saves it back with its original encoding, byte order mark and line endings.
+EditPad is a lightweight plain-text and code editor for iPhone and iPad that opens any text file from the Files app, highlights about 30 languages, and saves files back with their original encoding, byte order mark and line endings.
 
 ## Stack
 
 - Swift / SwiftUI, iOS and iPadOS 17+, Xcode 16 (folder-synchronized project, objectVersion 77)
-- App target `EditPad` (Swift 5 language mode) built on `DocumentGroup` + `FileDocument`
-- Local Swift package `EditPadKit` (Foundation only, swift-tools-version 5.9) for all file-format logic
+- App target `EditPad` (Swift 5 language mode) built on `DocumentGroup` + `FileDocument`, with a `UITextView` editor
+- Local Swift package `EditPadKit` (Foundation only, swift-tools-version 5.9) for file-format, syntax-highlighting and indentation logic
 - XCTest; CI on GitHub Actions: package tests on Linux (swift:6.0) and macOS 15, plus an iOS Simulator build
 - No third-party dependencies
 
@@ -48,7 +48,7 @@ EditPad is a lightweight plain-text editor for iPhone and iPad that opens any te
 |-------|------|--------------|
 | coordinator | routing, planning, AGENTS.md | everyone |
 | core | Packages/EditPadKit/Sources/ | app (UI exposure), test-writer (coverage) |
-| app | EditPad/, Config/, EditPad.xcodeproj/ | core (file-format logic) |
+| app | EditPad/, Config/, EditPad.xcodeproj/, scripts/generate-file-types.py | core (file-format and syntax logic) |
 | test-writer | Packages/EditPadKit/Tests/ | core (bugs found) |
 | navigator | read-only Q&A | the owning task agent |
 
@@ -57,6 +57,8 @@ EditPad is a lightweight plain-text editor for iPhone and iPad that opens any te
 - Text in memory is always `\n`-normalized; only `EditPadKit` converts line endings.
 - Every encoding or line-ending path needs a byte-for-byte round-trip test.
 - Preference keys and defaults live in `EditPad/EditorSettings.swift`.
+- File-type declarations are generated: edit `scripts/generate-file-types.py`, then run it.
+- Spell checking, autocorrect and smart punctuation default to off.
 - New app source files go in `EditPad/` and are picked up automatically; don't hand-edit file references in the project file.
 - Commit messages: imperative subject under 72 characters, blank line, body explaining why.
 

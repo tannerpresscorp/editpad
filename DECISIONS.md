@@ -2,6 +2,23 @@
 
 Architecture decisions for EditPad, newest first. Each entry: what was decided, why, and what it rules out.
 
+## 2026-10-18 — UITextView instead of SwiftUI TextEditor
+
+**Decision:** The editor is `CodeTextView`, a `UIViewRepresentable` around `UITextView`.
+**Why:** `TextEditor` has no way to turn off spell checking, smart quotes, smart dashes or inline predictions, and can't apply per-range colors. All of these matter for editing code.
+**Supersedes:** "Rules out syntax highlighting" in the DocumentGroup entry below.
+
+## 2026-10-18 — Regex tokenizer, not a parser
+
+**Decision:** Highlighting uses per-language regular expressions in `EditPadKit` (`SyntaxGrammar`, `SyntaxHighlighter`): comments and strings first in one alternation, then keywords, types, calls and numbers outside them. Tokenizing runs on a background queue; files over 250 KB aren't highlighted.
+**Why:** Keeps the app dependency-free and lightweight while covering ~30 languages. Measured ~85 ms for a 227 KB Swift file on Linux release builds.
+**Consequence:** Highlighting is approximate (no regex literals, no nested template expressions). Tree-sitter would be the next step if accuracy becomes a priority.
+
+## 2026-10-18 — Open any file, refuse binaries at decode time
+
+**Decision:** `public.data` is a readable type with `LSHandlerRank` None, alongside ~45 text and code types at rank Alternate. Code types iOS doesn't declare are imported in Info.plist. Both lists are generated from `scripts/generate-file-types.py`.
+**Why:** Dotfiles, `LICENSE`, `Dockerfile` and `.ts` (which iOS types as MPEG transport stream) otherwise can't be opened. Rank None keeps EditPad out of "Open with" for images and other binaries; `TextCodec` rejects binary data with a clear error.
+
 ## 2026-10-18 — Single-byte encodings use hand-written tables
 
 **Decision:** Windows-1252 and ISO Latin 1 are decoded and encoded by `SingleByteCodec`, not `String.Encoding`.
@@ -28,7 +45,7 @@ Architecture decisions for EditPad, newest first. Each entry: what was decided, 
 
 **Decision:** Use `DocumentGroup` + `FileDocument` + `TextEditor` with the system find navigator. Minimum iOS 17. No third-party packages.
 **Why:** The system document browser gives Files integration, autosave, rename and iCloud for free, which is the "lightweight" goal.
-**Rules out (for now):** syntax highlighting, line numbers and cursor position, which need a custom `UITextView` wrapper.
+**Rules out (for now):** syntax highlighting, line numbers and cursor position, which need a custom `UITextView` wrapper. (Highlighting since added; see above.)
 
 ## 2026-10-18 — Xcode 16 folder-synchronized project
 

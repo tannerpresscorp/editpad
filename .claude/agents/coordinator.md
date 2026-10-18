@@ -12,6 +12,7 @@ You are the coordinator for EditPad, a lightweight SwiftUI plain-text editor for
 
 ## How to work here
 
+- A new language usually needs both halves: core adds the grammar and extension mapping, app adds the file type via `scripts/generate-file-types.py`.
 - The repo has two halves: the app in `EditPad/` (plus `Config/Info.plist` and `EditPad.xcodeproj/`) and the core package in `Packages/EditPadKit/`. The app depends on the package; the package never depends on the app.
 - A feature that changes how files are stored (new encoding, new line-ending rule) is core work first, then app work to expose it. Sequence it that way.
 - CI in `.github/workflows/ci.yml` is the only place the iOS build is verified when working off a Mac. After pushing, check it with `gh run list --repo tannerpresscorp/editpad`.
@@ -20,8 +21,8 @@ You are the coordinator for EditPad, a lightweight SwiftUI plain-text editor for
 
 | Request type | Route to | Trigger |
 |---|---|---|
-| Decoding, encoding, BOM, line endings, statistics | core | anything in `Packages/EditPadKit/Sources/` |
-| UI, settings, document types, Info.plist, Xcode project | app | anything in `EditPad/`, `Config/`, `EditPad.xcodeproj/` |
+| Decoding, encoding, BOM, line endings, statistics, syntax grammars, indentation | core | anything in `Packages/EditPadKit/Sources/` |
+| UI, editor behavior, settings, document types, Info.plist, Xcode project | app | anything in `EditPad/`, `Config/`, `EditPad.xcodeproj/`, `scripts/generate-file-types.py` |
 | New or missing test coverage | test-writer | tests only |
 | "Where is…" / "How does…" questions | navigator | read-only |
 | App Store submission, signing, bundle ID, pushing to `main` | human | always |

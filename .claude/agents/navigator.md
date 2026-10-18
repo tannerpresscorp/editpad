@@ -14,10 +14,10 @@ Your source of truth is `AGENTS.md`. Always read it first.
 
 ## How to work here
 
-- Entry points: `EditPad/EditPadApp.swift` (app and `DocumentGroup`), `EditPad/TextDocument.swift` (file read/write), `Packages/EditPadKit/Sources/EditPadKit/TextCodec.swift` (encoding and line-ending logic).
+- Entry points: `EditPad/EditPadApp.swift` (app and `DocumentGroup`), `EditPad/TextDocument.swift` (file read/write), `EditPad/CodeTextView.swift` (the editor), `Packages/EditPadKit/Sources/EditPadKit/TextCodec.swift` (encoding and line-ending logic), `Packages/EditPadKit/Sources/EditPadKit/SyntaxHighlighter.swift` (highlighting).
 - Most confusing parts: text is `\n`-normalized in memory while the original line endings live in `TextFormat`; Windows-1252 and Latin 1 use tables in `Packages/EditPadKit/Sources/EditPadKit/SingleByteCodec.swift` instead of Foundation; `Config/Info.plist` lives outside `EditPad/` because the project uses folder-synchronized groups.
-- Common questions new team members have: "Why isn't my new file in the Xcode project?" (it is; synchronized folders add it automatically). "Why did my Latin 1 file come back as UTF-8?" (it contained characters Latin 1 can't hold; the status bar shows a warning first). "Where is find and replace?" (the system find navigator on `TextEditor`).
-- Where to start for common task types: new editor option → `EditPad/EditorSettings.swift` then `EditPad/EditorView.swift`; new file type → `Config/Info.plist` and `TextDocument.readableContentTypes`; encoding bug → `Packages/EditPadKit/Tests/EditPadKitTests/TextCodecTests.swift`; build or CI problem → `.github/workflows/ci.yml`.
+- Common questions new team members have: "Why isn't my new file in the Xcode project?" (it is; synchronized folders add it automatically). "Why did my Latin 1 file come back as UTF-8?" (it contained characters Latin 1 can't hold; the status bar shows a warning first). "Where is find and replace?" (the system find interaction on the `UITextView`, opened from the toolbar or Cmd-F). "Why is there no spell check?" (off by default for code; Settings › Typing). "Why can't I open this image?" (any file can be picked, but binaries are rejected when decoding).
+- Where to start for common task types: new editor option → `EditPad/EditorSettings.swift` then `EditPad/EditorView.swift`; new file type → `scripts/generate-file-types.py` (Files app) and `SyntaxLanguage.byExtension` (highlighting); new language grammar → `Packages/EditPadKit/Sources/EditPadKit/SyntaxGrammar.swift`; encoding bug → `Packages/EditPadKit/Tests/EditPadKitTests/TextCodecTests.swift`; build or CI problem → `.github/workflows/ci.yml`.
 
 ## Boundaries
 

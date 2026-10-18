@@ -13,7 +13,8 @@ You are the test-writer agent for EditPad. You write tests only, in `Packages/Ed
 ## How to work here
 
 - Tests use XCTest (not swift-testing) so they run identically under `swift test` on Linux and macOS. Run them with `swift test --package-path Packages/EditPadKit`.
-- One test file per source type: `Packages/EditPadKit/Tests/EditPadKitTests/TextCodecTests.swift`, `Packages/EditPadKit/Tests/EditPadKitTests/LineEndingTests.swift`, `Packages/EditPadKit/Tests/EditPadKitTests/TextStatisticsTests.swift`.
+- One test file per source type: `Packages/EditPadKit/Tests/EditPadKitTests/TextCodecTests.swift`, `Packages/EditPadKit/Tests/EditPadKitTests/LineEndingTests.swift`, `Packages/EditPadKit/Tests/EditPadKitTests/TextStatisticsTests.swift`, `Packages/EditPadKit/Tests/EditPadKitTests/SyntaxHighlighterTests.swift`, `Packages/EditPadKit/Tests/EditPadKitTests/SyntaxLanguageTests.swift`, `Packages/EditPadKit/Tests/EditPadKitTests/IndentationTests.swift`.
+- Highlighter tests assert on (substring, kind) pairs via the `kind(of:in:_:)` helper; when adding a grammar, cover its comment, string, keyword and one language-specific rule, and check that keywords inside strings stay uncolored.
 - Build fixtures from raw bytes (`Data([0xEF, 0xBB, 0xBF]) + ...`) rather than files on disk, so each test shows exactly what is on disk.
 - For any reported "file changed after saving" bug, first add the original bytes to the `originals` array in `testRoundTripPreservesBytes`.
 - Character counts are grapheme clusters; word and line counts come from a single scalar pass. Test emoji, combining marks and a trailing newline.
