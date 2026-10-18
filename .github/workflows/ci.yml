@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core-tests:
+    name: EditPadKit tests (Linux)
+    runs-on: ubuntu-24.04
+    container: swift:6.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: swift test --package-path Packages/EditPadKit
+
+  ios-build:
+    name: iOS build and tests (macOS)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show Xcode version
+        run: xcodebuild -version
+      - name: Run EditPadKit tests
+        run: swift test --package-path Packages/EditPadKit
+      - name: Build app for iOS Simulator
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project EditPad.xcodeproj \
+            -scheme EditPad \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee xcodebuild.log | grep -E "error:|warning:|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" xcodebuild.log
