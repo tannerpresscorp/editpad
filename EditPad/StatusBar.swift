@@ -1,10 +1,11 @@
 import SwiftUI
 import EditPadKit
 
-/// Word, character and line counts plus the file's on-disk format.
+/// Word, character and line counts plus the file's language and on-disk format.
 struct StatusBar: View {
     let text: String
     let format: TextFormat
+    let language: SyntaxLanguage
 
     var body: some View {
         let stats = TextStatistics(text)
@@ -16,6 +17,9 @@ struct StatusBar: View {
                 .minimumScaleFactor(0.8)
 
             Spacer(minLength: 8)
+
+            Text(language.displayName)
+                .lineLimit(1)
 
             Text(format.lineEnding.label)
 
@@ -38,5 +42,5 @@ struct StatusBar: View {
 }
 
 #Preview {
-    StatusBar(text: "Hello world\nSecond line", format: .default)
+    StatusBar(text: "Hello world\nSecond line", format: .default, language: .swift)
 }
