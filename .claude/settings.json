@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(swift build:*)",
+      "Bash(swift test:*)",
+      "Bash(xcodebuild build:*)",
+      "Bash(xcodebuild -list:*)",
+      "Bash(xcodebuild -version)",
+      "Bash(bash scripts/verify-agents.sh)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Edit(LICENSE)",
+      "Write(LICENSE)"
+    ]
+  }
+}

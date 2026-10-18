@@ -1,0 +1,15 @@
+# Build output
+.build/
+build/
+DerivedData/
+Packages/*/.build/
+Packages/*/.swiftpm/
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+
+# Binary assets
+*.png
+*.ipa
+*.dSYM
