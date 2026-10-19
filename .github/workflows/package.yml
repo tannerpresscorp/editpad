@@ -1,0 +1,38 @@
+name: Package
+
+# Builds installable packages with scripts/package.sh and keeps them as
+# workflow artifacts (Actions › Package › latest run › Artifacts).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Build .ipa and simulator app
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # the build number is the commit count
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build packages
+        run: scripts/package.sh all --output dist
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: EditPad-packages
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 30
