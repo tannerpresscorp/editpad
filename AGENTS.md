@@ -31,7 +31,7 @@ EditPad is a lightweight plain-text and code editor for iPhone and iPad that ope
 
 - Changes land on `main`; every push and pull request runs `.github/workflows/ci.yml`.
 - A change is done when `swift test --package-path Packages/EditPadKit` passes and the CI iOS Simulator build succeeds.
-- No device signing or App Store deployment is automated; distribution is a manual, human step.
+- `.github/workflows/package.yml` builds an unsigned `.ipa` and a Simulator app on every push to `main` (workflow artifacts). Signing, TestFlight and App Store distribution stay manual, human steps.
 - Architecture decisions are recorded in `DECISIONS.md`.
 
 ## Off-limits
@@ -48,7 +48,7 @@ EditPad is a lightweight plain-text and code editor for iPhone and iPad that ope
 |-------|------|--------------|
 | coordinator | routing, planning, AGENTS.md | everyone |
 | core | Packages/EditPadKit/Sources/ | app (UI exposure), test-writer (coverage) |
-| app | EditPad/, Config/, EditPad.xcodeproj/, scripts/generate-file-types.py | core (file-format and syntax logic) |
+| app | EditPad/, Config/, EditPad.xcodeproj/, scripts/generate-file-types.py, scripts/package.sh | core (file-format and syntax logic) |
 | test-writer | Packages/EditPadKit/Tests/ | core (bugs found) |
 | navigator | read-only Q&A | the owning task agent |
 

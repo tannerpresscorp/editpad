@@ -30,7 +30,7 @@ jobs:
         run: scripts/package.sh all --output dist
 
       - name: Upload packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: EditPad-packages
           path: dist/*

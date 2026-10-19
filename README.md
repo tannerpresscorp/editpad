@@ -39,6 +39,30 @@ open EditPad.xcodeproj
 
 Choose the **EditPad** scheme and a simulator, then run. To install on a device, select your team under *Signing & Capabilities*.
 
+## Install
+
+Every push to `main` builds two packages (GitHub › **Actions** › **Package** › latest run › **Artifacts**):
+
+| File | For | How to install |
+|------|-----|----------------|
+| `EditPad-<version>-<build>-unsigned.ipa` | iPhone or iPad | Open it in a sideloading tool such as [Sideloadly](https://sideloadly.io) or [AltStore](https://altstore.io), which signs it with your Apple ID. With a free Apple ID the app must be refreshed every 7 days. |
+| `EditPad-<version>-<build>-simulator.zip` | iOS Simulator on a Mac | Unzip, boot a simulator, then `xcrun simctl install booted EditPad.app`, or drag `EditPad.app` onto the Simulator window. |
+
+To build and install from your own Mac instead (Xcode 16+):
+
+```sh
+# Signed build installed straight onto a connected iPhone/iPad (team ID: Xcode › Settings › Accounts)
+scripts/package.sh ipa --team ABCDE12345 --install
+
+# Run in the iOS Simulator
+scripts/package.sh simulator --install
+
+# Just the unsigned .ipa and simulator .zip, written to dist/
+scripts/package.sh all
+```
+
+If a free Apple account says the bundle identifier is unavailable, add `--bundle-id com.yourname.editpad`. The first time, iOS may ask you to enable Developer Mode (Settings › Privacy & Security) and to trust your developer certificate (Settings › General › VPN & Device Management).
+
 ## Project layout
 
 ```
@@ -50,7 +74,9 @@ EditPad/                      SwiftUI app
 Config/Info.plist             Document types and imported type declarations (generated sections)
 Packages/EditPadKit/          Platform-independent core: codec, line endings, statistics, syntax tokenizer, indentation
 scripts/generate-file-types.py  Regenerates the file-type declarations in Info.plist and Swift
+scripts/package.sh            Builds installable packages (.ipa, simulator app); see Install
 .github/workflows/ci.yml      Core tests on Linux and macOS, plus an iOS Simulator build
+.github/workflows/package.yml Builds the packages on every push to main
 ```
 
 All file-format and syntax logic lives in `EditPadKit` so it can be unit tested without a simulator:
